@@ -1,0 +1,2 @@
+10 20 rue Soufflot 30.0 40.12
+20 30 avenue du Général-Leclerc 80.15 10.25

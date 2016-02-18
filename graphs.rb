@@ -24,8 +24,8 @@ puts "The following streets have been imported:"
 edges.each_with_index do |edge, i|
   puts "  #{i}. #{edge.name}"
 end
-puts "Enter the two street numbers separated by a space:"
 
+puts "Enter the two origin street numbers separated by a space:"
 street_a = street_b = nil
 loop do
   print "> "
@@ -33,5 +33,16 @@ loop do
   break if street_a and street_b and street_a != street_b and street_a.intersection(street_b)
   puts "The input intersection was not found."
 end
-point = street_a.intersection(street_b)
-puts "The chosen streets are: #{street_a.name} and #{street_b.name}, the intersection is: (#{point.x}, #{point.y})"
+origin = street_a.intersection(street_b)
+puts "The chosen streets are: #{street_a.name} and #{street_b.name}, the origin point is at: (#{point.x}, #{point.y})."
+
+puts "Enter the two destination street numbers separated by a space:"
+street_a = street_b = nil
+loop do
+  print "> "
+  street_a, street_b = gets.split.map{ |e| edges[e.to_i] }
+  break if street_a and street_b and street_a != street_b and street_a.intersection(street_b)
+  puts "The input intersection was not found."
+end
+destination = street_a.intersection(street_b)
+puts "The chosen streets are: #{street_a.name} and #{street_b.name}, the destination point is at: (#{point.x}, #{point.y})."

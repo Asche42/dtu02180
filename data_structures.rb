@@ -20,6 +20,12 @@ module Heureka
       vertex.hash == self.hash
     end
 
+    # The two following methods are needed so that Array#uniq and Set#merge
+    # work on Vertex objects.
+    def eql?(vertex)
+      self == vertex
+    end
+
     def hash
       [@x, @y].hash
     end

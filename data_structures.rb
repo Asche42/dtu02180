@@ -22,10 +22,12 @@ module Heureka
 
     # The two following methods are needed so that Array#uniq and Set#merge
     # work on Vertex objects.
+    Contract Vertex => Bool
     def eql?(vertex)
       self == vertex
     end
 
+    Contract Contracts::None => Fixnum
     def hash
       [@x, @y].hash
     end
@@ -43,6 +45,7 @@ module Heureka
       @name = name
     end
 
+    Contract Contracts::None => String
     def to_s
       "#{@name} between (#{@a.x}, #{@a.y} and (#{@b.x}, #{@b.y}))"
     end

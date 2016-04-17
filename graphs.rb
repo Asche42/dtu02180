@@ -6,22 +6,7 @@ require 'pp'
 require_relative 'data_structures'
 require_relative 'pathfinding'
 
-# Function to parse the file.
-# Won't work with UTF-8 street names.
-def read_file(filename)
-  file_content = File.read(filename)
-  line_regex = /^([0-9.]+) ([0-9.]+) ([-A-Za-z0-9_ ]+) ([0-9.]+) ([0-9.]+)$/i
-  edges = []
-  file_content.each_line do |line|
-    if line =~ line_regex
-      xa, ya, name, xb, yb = line.match(line_regex).captures
-      edges << Heureka::Edge.new(name, Heureka::Vertex.new(xa.to_f, ya.to_f), Heureka::Vertex.new(xb.to_f, yb.to_f))
-    else
-      STDERR.puts "Following line was not recognized: #{line}"
-    end
-  end
-  edges
-end
+mesh = {}
 
 # Function to read, parse and check user input.
 def read_input(edges, street_names)

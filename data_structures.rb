@@ -8,11 +8,13 @@ module Heureka
     include ::Contracts
 
     attr_accessor :x, :y
+    attr_reader :neighbors
 
     Contract Contracts::Num, Contracts::Num => Contracts::Any
     def initialize(x, y)
       @x = x
       @y = y
+      @neighbors = []
     end
 
     Contract Vertex => Bool
@@ -31,23 +33,24 @@ module Heureka
     def hash
       [@x, @y].hash
     end
-  end
 
-  class Edge
-    include ::Contracts
-
-    attr_accessor :a, :b, :name
-
-    Contract String, Vertex, Vertex => Contracts::Any
-    def initialize(name, a, b)
-      @a = a
-      @b = b
-      @name = name
+    Contract Vertex => Contracts::Num
+    def cost(vertex)
+      raise "Method cost was not overloaded."
     end
 
-    Contract Contracts::None => String
-    def to_s
-      "#{@name} between (#{@a.x}, #{@a.y} and (#{@b.x}, #{@b.y}))"
+    Contract Vertex => Contracts::Num
+    def <=>(vertex)
+      # If the two nodes are at the same position, their cost is the same.
+      return 0 if self == vertex
+      cost <=> vertex.cost
     end
+
+    Contract Vertex => Contracts::Any
+    def add(neighbor)
+      # If this neighbor is not already present
+      @neighbors << neighbor unless @neighbors.include?(neighbor)
+    end
+    alias_method :<<, :add
   end
 end

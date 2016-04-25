@@ -12,25 +12,31 @@ module Heureka
       include ::Contracts
 
       class Node < Vertex
-        attr_reader :previous, :g
+        attr_accessor :g, :previous
 
         Contract Contracts::Num, Contracts::Num => Contracts::Any
-        def initialize(x, y, destination = nil)
+        def initialize(x, y)
           super(x, y)
-          @h = @g = 0
+          @g = @h = Float::INFINITY
           @previous = nil
-          @h = euclidean_distance(destination) if destination
         end
 
-        Contract Vertex => Contracts::Any
+        Contract Vertex, Vertex => Contracts::Any
         def initialize(vertex)
           super(vertex.x, vertex.y)
           @neighbors = vertex.neighbors
+          @g = @h = Float::INFINITY
+          @previous = nil
         end
 
         Contract Contracts::None => Contracts::Num
         def cost
           @h + @g
+        end
+
+        Contract Node => Contracts::Any
+        def update_h(destination)
+          @h = euclidean_distance(destination)
         end
 
         private
@@ -42,22 +48,62 @@ module Heureka
         end
       end
 
+      Contract Node => ArrayOf[Vertex]
+      def self.build_path(node)
+        path = []
+        current_node = node
+
+        until current_node.nil?
+          path.unshift(current_node)
+          current_node = current_node.previous
+        end
+
+        path
+      end
+
       Contract ArrayOf[Vertex], Vertex, Vertex => Contracts::Any
       def self.process(dataset, origin, destination)
+        # So, we're supposed to work with Nodes in the A* part of the project
+        origin = Node.new(origin) unless origin.is_a?(Node)
+        destination = Node.new(destination) unless destination.is_a?(Node)
+
+        origin.update_h(destination)
+        origin.g = 0
+
         unless dataset.first.is_a?(Node)
           dataset.map! do |vertex|
             Node.new(vertex)
           end
         end
 
-        origin = Node.new(origin) unless origin.is_a?(Node)
-        destination = Node.new(destination) unless destination.is_a?(Node)
-
         open_set = [origin]
         closed_set = []
         current_node = nil
 
+        until open_set.empty?
+          current_node = dataset.min
+          break if current_node == destination
 
+          open_set.delete(current_node)
+          closed_set << current_node
+
+          current_node.neighbors.each do |neighbor|
+            next if closed_set.include?(neighbor)
+
+            try_g_neighbor = current_node.g + 1
+            if not open_set.include?(neighbor)
+              open_set << neighbor
+            elsif try_g_neighbor >= neighbor.g
+              next
+            end
+
+            neighbor.previous = current_node
+            neighbor.g = try_g_neighbor
+            neighbor.update_h(destination)
+          end
+        end
+
+        self.build_path(current_node)
       end
     end
   end

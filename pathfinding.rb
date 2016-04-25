@@ -3,6 +3,7 @@
 # Implementation of the basic pathfinding input tools.
 
 require_relative 'data_structures'
+require_relative 'astar'
 
 module Heureka
   module Pathfinding
@@ -17,10 +18,10 @@ module Heureka
         if line =~ line_regex
           xa, ya, name, xb, yb = line.match(line_regex).captures
 
-          v0 = Heureka::Vertex.new(xa.to_f, ya.to_f)
+          v0 = Heureka::Pathfinding::Astar::Node.new(xa.to_f, ya.to_f)
           v0 = dataset.find {|e| e == v0 } || v0
 
-          v1 = Heureka::Vertex.new(xb.to_f, yb.to_f)
+          v1 = Heureka::Pathfinding::Astar::Node.new(xb.to_f, yb.to_f)
           v1 = dataset.find {|e| e == v1 } || v1
 
           v0 << v1

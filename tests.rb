@@ -52,6 +52,19 @@ FILECONTENT
     expect(dataset[2].neighbors).to eql([v1])
   end
 
+  it 'should be able to convert Vertices to Nodes' do
+    v0 = Heureka::Vertex.new(0.0, 0.0)
+
+    expect(Heureka::Pathfinding::Astar::Node.new(v0)).to eql(v0)
+  end
+
+  it 'should be able to find the path when there is only one node' do
+    v = Heureka::Vertex.new(0.0, 0.0)
+    path = Heureka::Pathfinding::Astar.process([v], v, v)
+
+    expect(path.first).to eq(v)
+  end
+
   it 'should be able to correctly perform a A* on a known dataset' do
     dataset, link_names = Heureka::Pathfinding.parse(@file_content)
     path = Heureka::Pathfinding::Astar.process(dataset, dataset.first, dataset.last)

@@ -1,6 +1,8 @@
 require_relative 'data_structures'
 require_relative 'pathfinding'
 
+
+#paspd
 module Heureka
   class Atom
     attr_reader :letter, :sign

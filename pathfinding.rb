@@ -35,6 +35,7 @@ module Heureka
           link_names[name] << v0
           link_names[name] << v1
           link_names[name].uniq!
+        elsif line =~ /[ \t\n]/
         else
           STDERR.puts "Following line was not recognized: #{line}"
         end

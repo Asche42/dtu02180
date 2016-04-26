@@ -39,8 +39,6 @@ module Heureka
           @h = euclidean_distance(destination)
         end
 
-        private
-
         Contract Vertex => Contracts::Num
         def euclidean_distance(vertex)
           # We use the euclidian distance as our heuristic for this A* implementation.
@@ -81,7 +79,8 @@ module Heureka
         current_node = nil
 
         until open_set.empty?
-          current_node = dataset.min
+          current_node = open_set.min
+          puts "Nœud actuel : #{current_node.x}, #{current_node.y}"
           break if current_node == destination
 
           open_set.delete(current_node)
@@ -90,7 +89,7 @@ module Heureka
           current_node.neighbors.each do |neighbor|
             next if closed_set.include?(neighbor)
 
-            try_g_neighbor = current_node.g + 1
+            try_g_neighbor = current_node.g + current_node.euclidean_distance(neighbor)
             if not open_set.include?(neighbor)
               open_set << neighbor
             elsif try_g_neighbor >= neighbor.g

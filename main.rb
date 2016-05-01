@@ -5,6 +5,7 @@ require 'pp'
 
 require_relative 'data_structures'
 require_relative 'astar'
+require_relative 'logic'
 
 class Input
   def self.read(link_names)
@@ -29,6 +30,24 @@ class Input
       # An intersection was found, no need to cycle again.
       return [street_a, street_b, input]
     end
+  end
+end
+
+module Heureka
+  knowledge_base = []
+  clause0, clause1, clause2 = Clause.new, Clause.new, Clause.new
+  clause0 << Atom.new(:a) << Atom.new(:b, false)
+  clause1 << Atom.new(:b) << Atom.new(:c, false)
+  clause2 << Atom.new(:b) << Atom.new(:c)
+  knowledge_base << clause0 << clause1 << clause2
+
+  input = Clause.new
+  input << Atom.new(:a)
+  current = input.map{|e| e.not}
+  until current.empty?
+    current = Clause.merge([current, knowledge_base.sample])
+    knowledge_base << current
+    puts "zizi: #{current}"
   end
 end
 

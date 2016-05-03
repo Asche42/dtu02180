@@ -10,19 +10,19 @@ module Heureka
     # Function to parse the file.
     # Won't work with UTF-8 street names.
     def self.parse(file_content)
-      line_regex = /^([0-9.]+) ([0-9.]+) ([-A-Za-z0-9_ ]+) ([0-9.]+) ([0-9.]+)$/i
+      line_reg = /^([0-9.]+) ([0-9.]+) ([-A-Za-z0-9_ ]+) ([0-9.]+) ([0-9.]+)$/i
       dataset = []
       link_names = {}
 
       file_content.each_line do |line|
-        if line =~ line_regex
+        if line =~ line_reg
           xa, ya, name, xb, yb = line.match(line_regex).captures
 
           v0 = Heureka::Pathfinding::Astar::NodeGraph.new(xa.to_f, ya.to_f)
-          v0 = dataset.find {|e| e == v0 } || v0
+          v0 = dataset.find { |e| e == v0 } || v0
 
           v1 = Heureka::Pathfinding::Astar::NodeGraph.new(xb.to_f, yb.to_f)
-          v1 = dataset.find {|e| e == v1 } || v1
+          v1 = dataset.find { |e| e == v1 } || v1
 
           v0 << v1
 

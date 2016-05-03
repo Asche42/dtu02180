@@ -9,9 +9,12 @@ require_relative 'logic'
 
 module Heureka
   module Pathfinding
+    # Defines the A* functions and data structures for project Heureka.
     module Astar
       include ::Contracts
 
+      # A Node is a basic abstract entity used for pathfinding purposes.
+      # It is inherited by NodeGraph and NodeInferenceEngine.
       class Node < Vertex
         attr_accessor :g, :previous
 
@@ -27,11 +30,21 @@ module Heureka
           @h + @g
         end
 
-        def compute_new_g(neighbor); raise "Method compute_new_g was not overloaded."; end
-        def update_h(destination); raise "Method update_h was not overloaded."; end
-        def update_neighbors; raise "Method update_neighbors was not overloaded"; end
+        def compute_new_g(_neighbor)
+          raise 'Method compute_new_g was not overloaded.'
+        end
+
+        def update_h(_destination)
+          raise 'Method update_h was not overloaded.'
+        end
+
+        def update_neighbors
+          raise 'Method update_neighbors was not overloaded.'
+        end
       end
 
+      # A NodeGraph inherits Node.
+      # This data structure is used for pathfinding on graphs.
       class NodeGraph < Node
         Contract Node => Contracts::Any
         def update_h(destination)
@@ -45,23 +58,26 @@ module Heureka
 
         Contract Node => Contracts::Num
         def euclidean_distance(vertex)
-          # We use the euclidian distance as our heuristic for this A* implementation.
+          # We use the euclidian distance as our heuristic
+          #   for this A* implementation.
           Math.sqrt((@x - vertex.x)**2 + (@y - vertex.y)**2)
         end
 
         def update_neighbors; end
       end
 
+      # A NodeInferenceEngine inherits Node.
+      # This data structure is used for pathfinding on inference engine rules.
       class NodeInferenceEngine < Node
         attr_accessor :clause, :kb
 
         Contract Node => Contracts::Any
-        def update_h(destination)
+        def update_h(_destination)
           @h = @clause.size
         end
 
         Contract Node, Node => Contracts::Num
-        def compute_new_g(neighbor)
+        def compute_new_g(_neighbor)
           @g + 1
         end
 
@@ -84,9 +100,7 @@ module Heureka
       end
 
       Contract ArrayOf[Node], Node, Node => Contracts::Any
-      def self.process(dataset, origin, destination)
-        # So, we're supposed to work with Nodes in the A* part of the project
-
+      def self.process(origin, destination)
         origin.update_h(destination)
         origin.g = 0
 
@@ -109,7 +123,7 @@ module Heureka
             neighbor.update_h(destination)
 
             try_g_neighbor = current_node.compute_new_g(neighbor)
-            if not open_set.include?(neighbor)
+            if !open_set.include?(neighbor)
               open_set << neighbor
             elsif try_g_neighbor >= neighbor.g
               next
@@ -121,9 +135,8 @@ module Heureka
           end
         end
 
-        self.build_path(current_node)
+        build_path(current_node)
       end
     end
   end
 end
-

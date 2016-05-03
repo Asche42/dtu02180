@@ -4,6 +4,9 @@
 require 'contracts'
 
 module Heureka
+  # A Vertex is a basic element of a graph.
+  # Here, we define most of the most essential features used by
+  # Heureka::Astar::Node.
   class Vertex
     include ::Contracts
 
@@ -18,15 +21,15 @@ module Heureka
     end
 
     Contract Vertex => Bool
-    def ==(vertex)
-      vertex.hash == self.hash
+    def ==(other)
+      other.hash == hash
     end
 
     # The two following methods are needed so that Array#uniq and Set#merge
     # work on Vertex objects.
     Contract Vertex => Bool
-    def eql?(vertex)
-      self == vertex
+    def eql?(other)
+      self == other
     end
 
     Contract Contracts::None => Fixnum
@@ -35,15 +38,15 @@ module Heureka
     end
 
     Contract Vertex => Contracts::Num
-    def cost(vertex)
-      raise "Method cost was not overloaded."
+    def cost(_)
+      raise 'Method cost was not overloaded.'
     end
 
     Contract Vertex => Contracts::Num
-    def <=>(vertex)
+    def <=>(other)
       # If the two nodes are at the same position, their cost is the same.
-      return 0 if self == vertex
-      cost <=> vertex.cost
+      return 0 if self == other
+      cost <=> other.cost
     end
 
     Contract Vertex => Contracts::Any
@@ -51,6 +54,6 @@ module Heureka
       # If this neighbor is not already present
       @neighbors << neighbor unless @neighbors.include?(neighbor)
     end
-    alias_method :<<, :add
+    alias << add
   end
 end

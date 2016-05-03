@@ -33,6 +33,7 @@ class Input
   end
 end
 
+=begin
 module Heureka
   knowledge_base = []
   clause0, clause1, clause2 = Clause.new, Clause.new, Clause.new
@@ -50,6 +51,7 @@ module Heureka
     puts "zizi: #{current}"
   end
 end
+=end
 
 dataset, link_names = Heureka::Pathfinding.parse(open('manhattan.txt').read)
 

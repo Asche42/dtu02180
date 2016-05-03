@@ -18,10 +18,10 @@ module Heureka
         if line =~ line_regex
           xa, ya, name, xb, yb = line.match(line_regex).captures
 
-          v0 = Heureka::Pathfinding::Astar::Node.new(xa.to_f, ya.to_f)
+          v0 = Heureka::Pathfinding::Astar::NodeGraph.new(xa.to_f, ya.to_f)
           v0 = dataset.find {|e| e == v0 } || v0
 
-          v1 = Heureka::Pathfinding::Astar::Node.new(xb.to_f, yb.to_f)
+          v1 = Heureka::Pathfinding::Astar::NodeGraph.new(xb.to_f, yb.to_f)
           v1 = dataset.find {|e| e == v1 } || v1
 
           v0 << v1

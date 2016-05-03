@@ -5,6 +5,7 @@ require 'pp'
 
 require_relative 'data_structures'
 require_relative 'pathfinding'
+require_relative 'logic'
 
 module Heureka
   module Pathfinding
@@ -21,28 +22,51 @@ module Heureka
           @previous = nil
         end
 
-        Contract Vertex, Vertex => Contracts::Any
-        def initialize(vertex)
-          super(vertex.x, vertex.y)
-          @neighbors = vertex.neighbors
-          @g = @h = Float::INFINITY
-          @previous = nil
-        end
-
         Contract Contracts::None => Contracts::Num
         def cost
           @h + @g
         end
 
+        def compute_new_g(neighbor); raise "Method compute_new_g was not overloaded."; end
+        def update_h(destination); raise "Method update_h was not overloaded."; end
+        def update_neighbors; raise "Method update_neighbors was not overloaded"; end
+      end
+
+      class NodeGraph < Node
         Contract Node => Contracts::Any
         def update_h(destination)
           @h = euclidean_distance(destination)
         end
 
-        Contract Vertex => Contracts::Num
+        Contract Node, Node => Contracts::Num
+        def compute_new_g(neighbor)
+          @g + euclidean_distance(neighbor)
+        end
+
+        Contract Node => Contracts::Num
         def euclidean_distance(vertex)
           # We use the euclidian distance as our heuristic for this A* implementation.
-          Math.sqrt((x - vertex.x)**2 + (y - vertex.y)**2)
+          Math.sqrt((@x - vertex.x)**2 + (@y - vertex.y)**2)
+        end
+
+        def update_neighbors; end
+      end
+
+      class NodeInferenceEngine < Node
+        attr_accessor :clause, :kb
+
+        Contract Node => Contracts::Any
+        def update_h(destination)
+          @h = @clause.size
+        end
+
+        Contract Node, Node => Contracts::Num
+        def compute_new_g(neighbor)
+          @g + 1
+        end
+
+        def update_neighbors
+          # TODO
         end
       end
 
@@ -59,20 +83,12 @@ module Heureka
         path
       end
 
-      Contract ArrayOf[Vertex], Vertex, Vertex => Contracts::Any
+      Contract ArrayOf[Node], Node, Node => Contracts::Any
       def self.process(dataset, origin, destination)
         # So, we're supposed to work with Nodes in the A* part of the project
-        origin = Node.new(origin) unless origin.is_a?(Node)
-        destination = Node.new(destination) unless destination.is_a?(Node)
 
         origin.update_h(destination)
         origin.g = 0
-
-        unless dataset.first.is_a?(Node)
-          dataset.map! do |vertex|
-            Node.new(vertex)
-          end
-        end
 
         open_set = [origin]
         closed_set = []
@@ -85,12 +101,14 @@ module Heureka
           open_set.delete(current_node)
           closed_set << current_node
 
+          current_node.update_neighbors
+
           current_node.neighbors.each do |neighbor|
             next if closed_set.include?(neighbor)
 
             neighbor.update_h(destination)
 
-            try_g_neighbor = current_node.g + current_node.euclidean_distance(neighbor)
+            try_g_neighbor = current_node.compute_new_g(neighbor)
             if not open_set.include?(neighbor)
               open_set << neighbor
             elsif try_g_neighbor >= neighbor.g

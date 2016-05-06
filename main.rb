@@ -9,7 +9,7 @@ require_relative 'logic'
 
 # Simple module to process the file in input.
 module Input
-  def read(link_names) # rubocop:disable Metrics/MethodLength
+  def self.read(link_names) # rubocop:disable Metrics/MethodLength
     loop do
       print '> '
       street_a, street_b = gets.split # Parse the input

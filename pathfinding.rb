@@ -16,7 +16,7 @@ module Heureka
 
       file_content.each_line do |line|
         if line =~ line_reg
-          xa, ya, name, xb, yb = line.match(line_regex).captures
+          xa, ya, name, xb, yb = line.match(line_reg).captures
 
           v0 = Heureka::Pathfinding::Astar::NodeGraph.new(xa.to_f, ya.to_f)
           v0 = dataset.find { |e| e == v0 } || v0

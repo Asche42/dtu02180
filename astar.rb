@@ -69,9 +69,22 @@ module Heureka
           kb.each do |c|
             new_neighbor = NodeInferenceEngine.new(0.0, 0.0)
             new_neighbor.clause = Heureka::Clause.merge([clause, c])
-            new_neighbor.kb = kb.clone + clause
-            @neighbors += new_neighbor
+            new_neighbor.kb = Set.new(kb.map { |e| Heureka::Clause.merge([e, clause]) })
+            @neighbors << new_neighbor
           end
+        end
+
+        def eql?(other)
+          self == other
+        end
+
+        def ==(other)
+          return true if clause.empty? && other.clause.empty?
+          clause == other.clause && kb == other.kb
+        end
+
+        def to_s
+          clause.to_s
         end
       end
 

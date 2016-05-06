@@ -37,12 +37,26 @@ module Heureka
   
   class Clause < Set
     def self.merge(clauses)
-      res = clauses.flatten(1)
+      res = Clause.new
+      a = clauses.flatten(1)
+      a.each { |clause| res |= clause }
       a = res.clone
-      a.each do |atom|
-        res.reject!{|e| e == atom.not}
+      a.each do |atom0|
+        a.each do |atom1|
+          if atom0 == atom1.not || atom0.not == atom1
+            res.reject! { |e| e == atom0 }
+            res.reject! { |e| e == atom1 }
+          end
+        end
       end
       res
+    end
+
+    def to_s
+      each do |e|
+        print e
+      end
+      puts
     end
   end
 end

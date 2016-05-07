@@ -15,14 +15,13 @@ module Heureka
       class Node < Vertex
         attr_accessor :g, :previous
 
-        Contract Contracts::Num, Contracts::Num => Contracts::Any
-        def initialize(x, y)
-          super(x, y)
+        def initialize
+          super
           @g = @h = Float::INFINITY
           @previous = nil
         end
 
-        Contract Contracts::None => Contracts::Num
+        Contract None => Num
         def cost
           @h + @g
         end
@@ -33,17 +32,30 @@ module Heureka
       end
 
       class NodeGraph < Node
-        Contract Node => Contracts::Any
+        attr_accessor :x, :y
+
+        def initialize(x, y)
+          super()
+          @x = x
+          @y = y
+        end
+
+        Contract None => Fixnum
+        def hash
+          [@x, @y].hash
+        end
+
+        Contract Node => Any
         def update_h(destination)
           @h = euclidean_distance(destination)
         end
 
-        Contract Node, Node => Contracts::Num
+        Contract Node, Node => Num
         def compute_new_g(neighbor)
           @g + euclidean_distance(neighbor)
         end
 
-        Contract Node => Contracts::Num
+        Contract Node => Num
         def euclidean_distance(vertex)
           # We use the euclidian distance as our heuristic for this A* implementation.
           Math.sqrt((@x - vertex.x)**2 + (@y - vertex.y)**2)
@@ -55,34 +67,44 @@ module Heureka
       class NodeInferenceEngine < Node
         attr_accessor :clause, :kb
 
-        Contract Node => Contracts::Any
+        def initialize(clause = nil, kb = nil)
+          super()
+          @clause = clause
+          @kb = kb
+        end
+
+        Contract Node => Any
         def update_h(destination)
           @h = @clause.size
         end
 
-        Contract Node, Node => Contracts::Num
+        Contract Node, Node => Num
         def compute_new_g(neighbor)
           @g + 1
         end
 
+        Contract None => Any
         def update_neighbors
           kb.each do |c|
-            new_neighbor = NodeInferenceEngine.new(0.0, 0.0)
+            new_neighbor = NodeInferenceEngine.new
             new_neighbor.clause = Heureka::Clause.merge([clause, c])
             new_neighbor.kb = Set.new(kb.map { |e| Heureka::Clause.merge([e, clause]) })
             @neighbors << new_neighbor
           end
         end
 
+        Contract NodeInferenceEngine => Bool
         def eql?(other)
           self == other
         end
 
+        Contract NodeInferenceEngine => Bool
         def ==(other)
           return true if clause.empty? && other.clause.empty?
           clause == other.clause && kb == other.kb
         end
 
+        Contract None => String
         def to_s
           clause.to_s
         end
@@ -101,7 +123,7 @@ module Heureka
         path
       end
 
-      Contract ArrayOf[Node], Node, Node => Contracts::Any
+      Contract ArrayOf[Node], Node, Node => Any
       def self.process(dataset, origin, destination)
         # So, we're supposed to work with Nodes in the A* part of the project
 

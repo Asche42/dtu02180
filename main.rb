@@ -33,18 +33,15 @@ class Input
   end
 end
 
-le_truc_quon_veut_tester = Heureka::Pathfinding::Astar::NodeInferenceEngine.new(0.0, 0.0)
 kb = Set.new
 kb << Heureka::Clause.new([Heureka::Atom.new(:b), Heureka::Atom.new(:c)]) 
 kb << Heureka::Clause.new([Heureka::Atom.new(:b), Heureka::Atom.new(:c, false)]) 
 kb << Heureka::Clause.new([Heureka::Atom.new(:a), Heureka::Atom.new(:b, false)]) 
-le_truc_quon_veut_tester.clause = Heureka::Clause.new([Heureka::Atom.new(:a, false)])
-le_truc_quon_veut_tester.kb = kb
+origin = Heureka::Pathfinding::Astar::NodeInferenceEngine.new(Heureka::Clause.new([Heureka::Atom.new(:a, false)]), kb)
 
-le_machin_de_fin = Heureka::Pathfinding::Astar::NodeInferenceEngine.new(0.0, 0.0)
-le_machin_de_fin.clause = Heureka::Clause.new([])
+destination = Heureka::Pathfinding::Astar::NodeInferenceEngine.new(Heureka::Clause.new([]), nil)
 
-puts Heureka::Pathfinding::Astar.process([], le_truc_quon_veut_tester, le_machin_de_fin)
+puts Heureka::Pathfinding::Astar.process([], origin, destination)
 
 dataset, link_names = Heureka::Pathfinding.parse(open('manhattan.txt').read)
 

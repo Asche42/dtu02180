@@ -7,13 +7,10 @@ module Heureka
   class Vertex
     include ::Contracts
 
-    attr_accessor :x, :y
     attr_reader :neighbors
 
-    Contract Contracts::Num, Contracts::Num => Contracts::Any
-    def initialize(x, y)
-      @x = x
-      @y = y
+    Contract Num, Num => Any
+    def initialize
       @neighbors = []
     end
 
@@ -29,24 +26,19 @@ module Heureka
       self == vertex
     end
 
-    Contract Contracts::None => Fixnum
-    def hash
-      [@x, @y].hash
-    end
-
-    Contract Vertex => Contracts::Num
+    Contract Vertex => Num
     def cost(vertex)
       raise "Method cost was not overloaded."
     end
 
-    Contract Vertex => Contracts::Num
+    Contract Vertex => Num
     def <=>(vertex)
       # If the two nodes are at the same position, their cost is the same.
       return 0 if self == vertex
       cost <=> vertex.cost
     end
 
-    Contract Vertex => Contracts::Any
+    Contract Vertex => Any
     def add(neighbor)
       # If this neighbor is not already present
       @neighbors << neighbor unless @neighbors.include?(neighbor)

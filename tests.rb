@@ -9,12 +9,12 @@ require_relative 'astar'
 
 RSpec.describe Heureka::Vertex do
   it 'should correctly compare two vertices at the same place' do
-    v0, v1 = Array.new(2, Heureka::Vertex.new(1, 1))
+    v0, v1 = Array.new(2, Heureka::Pathfinding::Astar::NodeGraph.new(1, 1))
     expect(v0).to eq(v1)
   end
 
   it 'should be able to retrieve a vertex from a hashmap' do
-    v0, v1 = Array.new(2, Heureka::Vertex.new(1, 1))
+    v0, v1 = Array.new(2, Heureka::Pathfinding::Astar::NodeGraph.new(1, 1))
     h = Hash[v0, :test]
     expect(h[v1]).to eq(:test)
   end
@@ -32,9 +32,9 @@ FILECONTENT
 
   it 'should be able to correctly detect link names' do
     dataset, link_names = Heureka::Pathfinding.parse(@file_content)
-    v0 = Heureka::Vertex.new(0.0, 0.0)
-    v1 = Heureka::Vertex.new(1.0, 1.0)
-    v2 = Heureka::Vertex.new(2.0, 2.0)
+    v0 = Heureka::Pathfinding::Astar::NodeGraph.new(0.0, 0.0)
+    v1 = Heureka::Pathfinding::Astar::NodeGraph.new(1.0, 1.0)
+    v2 = Heureka::Pathfinding::Astar::NodeGraph.new(2.0, 2.0)
 
     expect(link_names.keys).to eq(["test0", "test1"])
     expect(link_names["test0"]).to eq([v0, v1])
@@ -43,23 +43,17 @@ FILECONTENT
 
   it 'should be able to correctly producte a mesh from some file content' do
     dataset, link_names = Heureka::Pathfinding.parse(@file_content)
-    v0 = Heureka::Vertex.new(0.0, 0.0)
-    v1 = Heureka::Vertex.new(1.0, 1.0)
-    v2 = Heureka::Vertex.new(2.0, 2.0)
+    v0 = Heureka::Pathfinding::Astar::NodeGraph.new(0.0, 0.0)
+    v1 = Heureka::Pathfinding::Astar::NodeGraph.new(1.0, 1.0)
+    v2 = Heureka::Pathfinding::Astar::NodeGraph.new(2.0, 2.0)
 
     expect(dataset[0].neighbors).to eql([v1])
     expect(dataset[1].neighbors).to eql([v0, v2])
     expect(dataset[2].neighbors).to eql([v1])
   end
 
-  it 'should be able to convert Vertices to Nodes' do
-    v0 = Heureka::Vertex.new(0.0, 0.0)
-
-    expect(Heureka::Pathfinding::Astar::Node.new(v0)).to eql(v0)
-  end
-
   it 'should be able to find the path when there is only one node' do
-    v = Heureka::Vertex.new(0.0, 0.0)
+    v = Heureka::Pathfinding::Astar::NodeGraph.new(0.0, 0.0)
     path = Heureka::Pathfinding::Astar.process([v], v, v)
 
     expect(path.first).to eq(v)

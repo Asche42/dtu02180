@@ -33,17 +33,19 @@ class Input
   end
 end
 
-kb = Set.new
-kb << Heureka::Clause.new([Heureka::Atom.new(:b), Heureka::Atom.new(:c)]) 
-kb << Heureka::Clause.new([Heureka::Atom.new(:b), Heureka::Atom.new(:c, false)]) 
-kb << Heureka::Clause.new([Heureka::Atom.new(:a), Heureka::Atom.new(:b, false)]) 
-origin = Heureka::Pathfinding::Astar::NodeInferenceEngine.new(Heureka::Clause.new([Heureka::Atom.new(:a, false)]), kb)
+origin, kb = Heureka::Pathfinding.parse_inference_file(open('clauses.txt').read)
 destination = Heureka::Pathfinding::Astar::NodeInferenceEngine.new(Heureka::Clause.new([]), nil)
 
-inference_engine_path = Heureka::Pathfinding::Astar.process([], origin, destination)
-puts (inference_engine_path || "No path has been found.")
+puts "We have #{origin.size} origin points."
+puts
 
-dataset, link_names = Heureka::Pathfinding.parse(open('manhattan.txt').read)
+origin.each do |o|
+  puts "Origin : #{o}"
+  inference_engine_path = Heureka::Pathfinding::Astar.process([], o, destination)
+  puts (inference_engine_path || "No path has been found.")
+end
+
+dataset, link_names = Heureka::Pathfinding.parse_graph_file(open('manhattan.txt').read)
 
 # Now we can ask for the starting point.
 puts "Enter the two origin street names separated by a space:"

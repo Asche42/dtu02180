@@ -3,13 +3,14 @@
 # Implementation of the basic pathfinding input tools.
 
 require_relative 'data_structures'
+require_relative 'logic'
 require_relative 'astar'
 
 module Heureka
   module Pathfinding
     # Function to parse the file.
     # Won't work with UTF-8 street names.
-    def self.parse(file_content)
+    def self.parse_graph_file(file_content)
       line_regex = /^([0-9.]+) ([0-9.]+) ([-A-Za-z0-9_ ]+) ([0-9.]+) ([0-9.]+)$/i
       dataset = []
       link_names = {}
@@ -42,6 +43,29 @@ module Heureka
       end
 
       [dataset, link_names]
+    end
+
+    def self.parse_inference_file(file_content)
+      kb = Set.new
+      origin = []
+
+      file_content.each_line do |line|
+        left, right = line.split(' if ').map(&:split)
+
+        left = left.map { |e| Heureka::Atom.new(e.to_sym) }
+        right = (right || []).map { |e| Heureka::Atom.new(e.to_sym, false) }
+
+        left.each do |e|
+          c = Clause.new([e] + right)
+          kb << c
+        end
+      end
+
+      file_content.split("\n").first.split(' if ').map(&:split).first.each do |e|
+        origin << Heureka::Pathfinding::Astar::NodeInferenceEngine.new(Heureka::Clause.new([Heureka::Atom.new(e.to_sym).not]), kb)
+      end
+
+      [origin, kb]
     end
   end
 end

@@ -22,16 +22,23 @@ end
 
 RSpec.describe Heureka::Pathfinding do
   before(:example) do
-    @file_content = <<FILECONTENT
+    @graph_file_content = <<FILECONTENT
 0 0 test0 1 1
 1 1 test0 0 0
 1 1 test1 2 2
 2 2 test1 1 1
 FILECONTENT
+
+    @inference_file_content = <<FILECONTENT
+a b if c
+c if d g
+d
+g
+FILECONTENT
   end
 
   it 'should be able to correctly detect link names' do
-    dataset, link_names = Heureka::Pathfinding.parse(@file_content)
+    dataset, link_names = Heureka::Pathfinding.parse_graph_file(@graph_file_content)
     v0 = Heureka::Pathfinding::Astar::NodeGraph.new(0.0, 0.0)
     v1 = Heureka::Pathfinding::Astar::NodeGraph.new(1.0, 1.0)
     v2 = Heureka::Pathfinding::Astar::NodeGraph.new(2.0, 2.0)
@@ -42,7 +49,7 @@ FILECONTENT
   end
 
   it 'should be able to correctly producte a mesh from some file content' do
-    dataset, link_names = Heureka::Pathfinding.parse(@file_content)
+    dataset, link_names = Heureka::Pathfinding.parse_graph_file(@graph_file_content)
     v0 = Heureka::Pathfinding::Astar::NodeGraph.new(0.0, 0.0)
     v1 = Heureka::Pathfinding::Astar::NodeGraph.new(1.0, 1.0)
     v2 = Heureka::Pathfinding::Astar::NodeGraph.new(2.0, 2.0)
@@ -60,10 +67,25 @@ FILECONTENT
   end
 
   it 'should be able to correctly perform a A* on a known dataset' do
-    dataset, link_names = Heureka::Pathfinding.parse(@file_content)
+    dataset, link_names = Heureka::Pathfinding.parse_graph_file(@graph_file_content)
     path = Heureka::Pathfinding::Astar.process(dataset, dataset.first, dataset.last)
 
     expect(path.first.x).to eq(0)
     expect(path.last.x).to eq(2)
+  end
+
+  it 'should be able to parse an inference engine file' do
+    origin, kb = Heureka::Pathfinding.parse_inference_file(@inference_file_content)
+
+    expected_kb = Set.new
+    expected_kb << Heureka::Clause.new([Heureka::Atom.new(:a), Heureka::Atom.new(:c, false)]) 
+    expected_kb << Heureka::Clause.new([Heureka::Atom.new(:b), Heureka::Atom.new(:c, false)]) 
+    expected_kb << Heureka::Clause.new([Heureka::Atom.new(:c), Heureka::Atom.new(:d, false), Heureka::Atom.new(:g, false)]) 
+    expected_kb << Heureka::Clause.new([Heureka::Atom.new(:d)]) 
+    expected_kb << Heureka::Clause.new([Heureka::Atom.new(:g)]) 
+
+    expect(kb).to eq(expected_kb)
+    expect(origin[0]).to eq(Heureka::Pathfinding::Astar::NodeInferenceEngine.new(Heureka::Clause.new([Heureka::Atom.new(:a, false)]), kb))
+    expect(origin[1]).to eq(Heureka::Pathfinding::Astar::NodeInferenceEngine.new(Heureka::Clause.new([Heureka::Atom.new(:b, false)]), kb))
   end
 end

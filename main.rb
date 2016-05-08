@@ -40,7 +40,8 @@ kb << Heureka::Clause.new([Heureka::Atom.new(:a), Heureka::Atom.new(:b, false)])
 origin = Heureka::Pathfinding::Astar::NodeInferenceEngine.new(Heureka::Clause.new([Heureka::Atom.new(:a, false)]), kb)
 destination = Heureka::Pathfinding::Astar::NodeInferenceEngine.new(Heureka::Clause.new([]), nil)
 
-puts Heureka::Pathfinding::Astar.process([], origin, destination)
+inference_engine_path = Heureka::Pathfinding::Astar.process([], origin, destination)
+puts (inference_engine_path || "No path has been found.")
 
 dataset, link_names = Heureka::Pathfinding.parse(open('manhattan.txt').read)
 

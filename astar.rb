@@ -162,7 +162,11 @@ module Heureka
           end
         end
 
-        self.build_path(current_node)
+        if current_node == destination
+          self.build_path(current_node)
+        else
+          nil
+        end
       end
     end
   end

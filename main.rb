@@ -38,7 +38,6 @@ kb << Heureka::Clause.new([Heureka::Atom.new(:b), Heureka::Atom.new(:c)])
 kb << Heureka::Clause.new([Heureka::Atom.new(:b), Heureka::Atom.new(:c, false)]) 
 kb << Heureka::Clause.new([Heureka::Atom.new(:a), Heureka::Atom.new(:b, false)]) 
 origin = Heureka::Pathfinding::Astar::NodeInferenceEngine.new(Heureka::Clause.new([Heureka::Atom.new(:a, false)]), kb)
-
 destination = Heureka::Pathfinding::Astar::NodeInferenceEngine.new(Heureka::Clause.new([]), nil)
 
 puts Heureka::Pathfinding::Astar.process([], origin, destination)

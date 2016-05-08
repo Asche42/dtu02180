@@ -85,10 +85,11 @@ module Heureka
 
         Contract None => Any
         def update_neighbors
-          kb.each do |c|
+          @kb.each do |c|
             new_neighbor = NodeInferenceEngine.new
-            new_neighbor.clause = Heureka::Clause.merge([clause, c])
-            new_neighbor.kb = Set.new(kb.map { |e| Heureka::Clause.merge([e, clause]) })
+            new_neighbor.clause = Heureka::Clause.merge([@clause, c])
+            new_neighbor.kb = @kb.clone
+            new_neighbor.kb << @clause
             @neighbors << new_neighbor
           end
         end

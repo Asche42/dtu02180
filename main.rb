@@ -45,6 +45,8 @@ origin.each do |o|
   puts (inference_engine_path || "No path has been found.")
 end
 
+puts
+
 dataset, link_names = Heureka::Pathfinding.parse_graph_file(open('manhattan.txt').read)
 
 # Now we can ask for the starting point.

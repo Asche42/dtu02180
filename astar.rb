@@ -65,12 +65,13 @@ module Heureka
       end
 
       class NodeInferenceEngine < Node
-        attr_accessor :clause, :kb
+        attr_accessor :clause, :kb, :selected_parent
 
-        def initialize(clause = nil, kb = nil)
+        def initialize(clause = nil, kb = nil, selected_parent = nil)
           super()
           @clause = clause
           @kb = kb
+          @selected_parent = selected_parent
         end
 
         Contract Node => Any
@@ -90,6 +91,7 @@ module Heureka
             new_neighbor.clause = Heureka::Clause.merge([@clause, c])
             new_neighbor.kb = @kb.clone
             new_neighbor.kb << @clause
+            new_neighbor.selected_parent = c
             @neighbors << new_neighbor
           end
         end
@@ -107,7 +109,7 @@ module Heureka
 
         Contract None => String
         def to_s
-          clause.to_s
+          "#{(clause.empty?) ? "empty set " : clause.to_s}generated from KB element #{selected_parent || "origin"}"
         end
       end
 

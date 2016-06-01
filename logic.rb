@@ -32,18 +32,18 @@ module Heureka
     def ==(other)
       eql?(other)
     end
-    
+
     Contract Contracts::None => Atom
     def not
       Atom.new(@letter, !@sign)
     end
-    
+
     Contract Contracts::None => String
     def to_s
-      (@sign ? @letter.to_s : "not " + @letter.to_s)
+      (@sign ? @letter.to_s : 'not ' + @letter.to_s)
     end
   end
-  
+
   class Clause < Set
     include ::Contracts
 
@@ -66,7 +66,7 @@ module Heureka
 
     Contract Contracts::Any => String
     def to_s
-      reduce("") { |memo, e| memo + "#{e} " }
+      reduce('') { |memo, e| memo + "#{e} " }
     end
   end
 end

@@ -20,10 +20,10 @@ module Heureka
           xa, ya, name, xb, yb = line.match(line_regex).captures
 
           v0 = Heureka::Pathfinding::Astar::NodeGraph.new(xa.to_f, ya.to_f)
-          v0 = dataset.find {|e| e == v0 } || v0
+          v0 = dataset.find { |e| e == v0 } || v0
 
           v1 = Heureka::Pathfinding::Astar::NodeGraph.new(xb.to_f, yb.to_f)
-          v1 = dataset.find {|e| e == v1 } || v1
+          v1 = dataset.find { |e| e == v1 } || v1
 
           v0 << v1
 
@@ -55,10 +55,8 @@ module Heureka
         left = left.map { |e| Heureka::Atom.new(e.to_sym) }
         right = (right || []).map { |e| Heureka::Atom.new(e.to_sym, false) }
 
-        left.each do |e|
-          c = Clause.new([e] + right)
-          kb << c
-        end
+        c = Clause.new(left + right)
+        kb << c
       end
 
       file_content.split("\n").first.split(' if ').map(&:split).first.each do |e|

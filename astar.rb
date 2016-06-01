@@ -26,9 +26,17 @@ module Heureka
           @h + @g
         end
 
-        def compute_new_g(neighbor); raise "Method compute_new_g was not overloaded."; end
-        def update_h(destination); raise "Method update_h was not overloaded."; end
-        def update_neighbors; raise "Method update_neighbors was not overloaded"; end
+        def compute_new_g(_neighbor)
+          raise 'Method compute_new_g was not overloaded.'
+        end
+
+        def update_h(_destination)
+          raise 'Method update_h was not overloaded.'
+        end
+
+        def update_neighbors
+          raise 'Method update_neighbors was not overloaded'
+        end
       end
 
       class NodeGraph < Node
@@ -57,7 +65,8 @@ module Heureka
 
         Contract Node => Num
         def euclidean_distance(vertex)
-          # We use the euclidian distance as our heuristic for this A* implementation.
+          # We use the euclidian distance as our heuristic for
+          # this A* implementation.
           Math.sqrt((@x - vertex.x)**2 + (@y - vertex.y)**2)
         end
 
@@ -75,12 +84,12 @@ module Heureka
         end
 
         Contract Node => Any
-        def update_h(destination)
+        def update_h(_destination)
           @h = @clause.size
         end
 
         Contract Node, Node => Num
-        def compute_new_g(neighbor)
+        def compute_new_g(_neighbor)
           @g + 1
         end
 
@@ -109,7 +118,7 @@ module Heureka
 
         Contract None => String
         def to_s
-          "#{(clause.empty?) ? "empty set " : clause.to_s}generated from KB element #{selected_parent || "origin"}"
+          "#{clause.empty? ? 'empty set ' : clause.to_s}generated from KB element #{selected_parent || 'origin'}"
         end
       end
 
@@ -127,7 +136,7 @@ module Heureka
       end
 
       Contract ArrayOf[Node], Node, Node => Any
-      def self.process(dataset, origin, destination)
+      def self.process(_dataset, origin, destination)
         # So, we're supposed to work with Nodes in the A* part of the project
 
         origin.update_h(destination)
@@ -152,7 +161,7 @@ module Heureka
             neighbor.update_h(destination)
 
             try_g_neighbor = current_node.compute_new_g(neighbor)
-            if not open_set.include?(neighbor)
+            if !open_set.include?(neighbor)
               open_set << neighbor
             elsif try_g_neighbor >= neighbor.g
               next
@@ -164,13 +173,9 @@ module Heureka
           end
         end
 
-        if current_node == destination
-          self.build_path(current_node)
-        else
-          nil
-        end
+        return build_path(current_node) if current_node == destination
+        nil
       end
     end
   end
 end
-
